@@ -1,6 +1,6 @@
 import sys
 
-def insertion_sort(data):
+def insertion_sort(data): # --algorithm 1
     for i in range(1, len(data)):
         key = data[i]
         j = i - 1
@@ -9,8 +9,24 @@ def insertion_sort(data):
             j -= 1
         data[j + 1] = key
 
-def selection_sort(data):
-    for j in range(0, len(data)-1):
+def shell_sort(data): # --algorithm 2 / a_shaped_array in shell_sort doesn't work properly / other ok
+    n = data[0] 
+    k = n // 2 
+    x = 0
+    while k > 0:
+        for a in range(k):
+            data_n = [data[i] for i in range(0,len(data),k)]
+            insertion_sort(data_n)
+            for i in range(0,len(data_n)):
+                data[x] = data_n[i]
+                x = x + k
+            x = 0
+            i = i+1
+        k = k // 2  
+    return data
+
+def selection_sort(data): # --algorithm 3
+    for j in range(0, len(data)-1): 
         min = j 
         for i in range(j+1,len(data)):
             if data[i] < data[min]:
@@ -19,10 +35,12 @@ def selection_sort(data):
             data[min], data[j] = data[j], data[min]
     return data
 
-def sort_using_algorithm(data, algorithm):
+def sort_using_algorithm(data, algorithm): 
     if algorithm == 1:  
         insertion_sort(data)
     elif algorithm == 2:
+        shell_sort(data)
+    elif algorithm == 3:
         selection_sort(data)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
