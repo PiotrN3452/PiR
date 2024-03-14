@@ -10,12 +10,13 @@ def insertion_sort(data):
         data[j + 1] = key
 
 def selection_sort(data):
-    for j in range(1, len(data)-1):
+    for j in range(0, len(data)-1):
         min = j 
         for i in range(j+1,len(data)):
             if data[i] < data[min]:
                 min = i
-            data[min] == data[j]
+        if min != j:
+            data[min], data[j] = data[j], data[min]
     return data
 
 def sort_using_algorithm(data, algorithm):
