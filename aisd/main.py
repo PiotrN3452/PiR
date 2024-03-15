@@ -9,8 +9,8 @@ def insertion_sort(data): # --algorithm 1
             j -= 1
         data[j + 1] = key
 
-def shell_sort(data): # --algorithm 2 / a_shaped_array in shell_sort doesn't work properly / other ok
-    n = data[0] 
+def shell_sort(data): # --algorithm 2 
+    n = len(data)  
     k = n // 2 
     x = 0
     while k > 0:
