@@ -1,0 +1,8 @@
+insertion_sort  + 
+shell_sort      +
+selection_sort  +
+quick_sort_lp   +
+
+
++   -zrobione
+-   -niezrobione

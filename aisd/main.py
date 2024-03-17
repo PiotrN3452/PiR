@@ -52,12 +52,12 @@ def selection_sort(data): # --algorithm 3
     return data
 
 
-def quick_sort(A, p, r): # --algorithm 4
+def quick_sort_lp(A, p, r): # --algorithm 4
     if p < r:
-        q = partition(A, p, r)
-        quick_sort(A, p, q)
-        quick_sort(A, q + 1, r)
-def partition(A, p, r):
+        q = partition_lp(A, p, r)
+        quick_sort_lp(A, p, q)
+        quick_sort_lp(A, q + 1, r)
+def partition_lp(A, p, r):
     pi = p  
     c = A[pi]
     i = p
@@ -77,8 +77,7 @@ def sort_using_algorithm(data, algorithm):
     elif algorithm == 3:
         selection_sort(data)
     elif algorithm == 4:
-        
-        quick_sort(data,0,len(data)-1)
+        quick_sort_lp(data,0,len(data)-1)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
         data = sorted(data)
