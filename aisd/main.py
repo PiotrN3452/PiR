@@ -1,4 +1,20 @@
 import sys
+sys.setrecursionlimit(10000)
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
 
 def insertion_sort(data): # --algorithm 1
     for i in range(1, len(data)):
@@ -35,6 +51,24 @@ def selection_sort(data): # --algorithm 3
             data[min], data[j] = data[j], data[min]
     return data
 
+
+def quick_sort(A, p, r): # --algorithm 4
+    if p < r:
+        q = partition(A, p, r)
+        quick_sort(A, p, q)
+        quick_sort(A, q + 1, r)
+def partition(A, p, r):
+    pi = p  
+    c = A[pi]
+    i = p
+    for j in range(p + 1, r + 1):
+        if A[j] < c:
+            i += 1
+            A[i], A[j] = A[j], A[i]
+    pfi = i
+    A[pi], A[pfi] = A[pfi], A[pi]
+    return pfi
+
 def sort_using_algorithm(data, algorithm): 
     if algorithm == 1:  
         insertion_sort(data)
@@ -42,6 +76,9 @@ def sort_using_algorithm(data, algorithm):
         shell_sort(data)
     elif algorithm == 3:
         selection_sort(data)
+    elif algorithm == 4:
+        
+        quick_sort(data,0,len(data)-1)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
         data = sorted(data)
