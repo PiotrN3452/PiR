@@ -1,4 +1,5 @@
 import sys
+import random
 sys.setrecursionlimit(10000)
 
 
@@ -69,6 +70,27 @@ def partition_lp(A, p, r):
     A[pi], A[pfi] = A[pfi], A[pi]
     return pfi
 
+
+
+def quick_sort_rp(A, p, r):  # --algorithm 5
+    if p < r:
+        q = partition_rp(A, p, r)
+        quick_sort_rp(A, p, q)
+        quick_sort_rp(A, q + 1, r)
+def partition_rp(A, p, r):
+    pi = random.randint(p, r)  
+    A[p], A[pi] = A[pi], A[p]  
+    pivot_value = A[p]
+    i = p
+    for j in range(p + 1, r + 1):
+        if A[j] < pivot_value:
+            i += 1
+            A[i], A[j] = A[j], A[i]
+    pfi = i
+    A[p], A[pfi] = A[pfi], A[p]
+    return pfi
+
+
 def sort_using_algorithm(data, algorithm): 
     if algorithm == 1:  
         insertion_sort(data)
@@ -78,6 +100,8 @@ def sort_using_algorithm(data, algorithm):
         selection_sort(data)
     elif algorithm == 4:
         quick_sort_lp(data,0,len(data)-1)
+    elif algorithm == 5:
+        quick_sort_rp(data,0,len(data)-1)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
         data = sorted(data)
