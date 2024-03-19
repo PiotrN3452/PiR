@@ -91,6 +91,34 @@ def partition_rp(A, p, r):
     return pfi
 
 
+def max_heapify(a, heap_size, i):
+    l = 2 * i + 1
+    r = 2 * i + 2
+    largest = i
+    if l < heap_size and a[l] > a[largest]:
+        largest = l
+    if r < heap_size and a[r] > a[largest]:
+        largest = r
+    if largest != i:
+        a[i], a[largest] = a[largest], a[i]
+        max_heapify(a, heap_size, largest)
+def build_max_heap(a):
+    heap_size = len(a)
+    for i in range(heap_size // 2 - 1, -1, -1):
+        max_heapify(a, heap_size, i)
+def heap_sort(a):
+    build_max_heap(a)
+    heap_size = len(a)
+    for i in range(heap_size - 1, 0, -1):
+        a[0], a[i] = a[i], a[0]
+        heap_size -= 1
+        max_heapify(a, heap_size, 0)
+
+
+    
+
+
+
 def sort_using_algorithm(data, algorithm): 
     if algorithm == 1:  
         insertion_sort(data)
@@ -98,10 +126,12 @@ def sort_using_algorithm(data, algorithm):
         shell_sort(data)
     elif algorithm == 3:
         selection_sort(data)
-    elif algorithm == 4:
-        quick_sort_lp(data,0,len(data)-1)
     elif algorithm == 5:
+        quick_sort_lp(data,0,len(data)-1)
+    elif algorithm == 6:
         quick_sort_rp(data,0,len(data)-1)
+    elif algorithm == 4:
+        heap_sort(data)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
         data = sorted(data)
