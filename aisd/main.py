@@ -102,10 +102,12 @@ def max_heapify(a, heap_size, i):
     if largest != i:
         a[i], a[largest] = a[largest], a[i]
         max_heapify(a, heap_size, largest)
+        
 def build_max_heap(a):
     heap_size = len(a)
     for i in range(heap_size // 2 - 1, -1, -1):
         max_heapify(a, heap_size, i)
+
 def heap_sort(a):
     build_max_heap(a)
     heap_size = len(a)
@@ -115,7 +117,24 @@ def heap_sort(a):
         max_heapify(a, heap_size, 0)
 
 
-    
+
+def quick_sort_descending(A, p, r): #--algorithm 7
+    if p < r:
+        q = partition_descending(A, p, r)
+        quick_sort_descending(A, p, q)
+        quick_sort_descending(A, q + 1, r)
+
+def partition_descending(A, p, r):
+    pi = p
+    c = A[pi]
+    i = p
+    for j in range(p + 1, r + 1):
+        if A[j] > c:
+            i += 1
+            A[i], A[j] = A[j], A[i]
+    pfi = i
+    A[pi], A[pfi] = A[pfi], A[pi]
+    return pfi
 
 
 
@@ -132,6 +151,8 @@ def sort_using_algorithm(data, algorithm):
         quick_sort_rp(data,0,len(data)-1)
     elif algorithm == 4:
         heap_sort(data)
+    elif algorithm == 7:
+        quick_sort_descending(data,0,len(data)-1)
     else:
         # Default to using the sorted function if the algorithm number is not recognized
         data = sorted(data)
