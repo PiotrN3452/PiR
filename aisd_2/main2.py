@@ -20,48 +20,56 @@ class TreeNode:
             else:
                 self.right.insert(key)
 
-    def inorder(self):
+    def inorder(self, values = None):
+        if values is None:
+            values = []
         if self.left:
-            self.left.inorder()
-        print(self.key)
+            self.left.inorder(values)
+        values.append(self.key)
         if self.right:
-            self.right.inorder()
+            self.right.inorder(values)
+        return values
 
-    def preorder(self):
-        print(self.key)
+    def preorder(self, values = None):
+        if values is None:
+            values = []
+        values.append(self.key)
         if self.left:
-            self.left.preorder()
+            self.left.preorder(values)
         if self.right:
-            self.right.preorder()
+            self.right.preorder(values)
+        return values
 
-    def postorder(self):
+    def postorder(self, values = None):
+        if values is None:
+            values = []
         if self.left:
-            self.left.postorder()
+            self.left.postorder(values)
         if self.right:
-            self.right.postorder()
-        print(self.key) 
+            self.right.postorder(values)
+        values.append(self.key)
+        return values
 
     def min(self):
         if self.left:
-            self.left.min()
-        if self.left is None:
-            print(self.key)
+            return self.left.min()
+        return self.key
 
     def max(self):
         if self.right:
-            self.right.max()
-        if self.right is None:
-            print(self.key)
+            return self.right.max()
+        return self.key
 
 def min_max(arr):
     tree = TreeNode(arr[0])
     for key in arr[1:]:
         tree.insert(key)
 
-    print("Min: ")
-    tree.min()
-    print("Max: ")
-    tree.max()
+    min = tree.min()
+    max = tree.max()
+
+    print("Min:", min)
+    print("Max:", max)
 
 def traverse(arr):
 
@@ -69,13 +77,17 @@ def traverse(arr):
     for key in arr[1:]:
         tree.insert(key)
     
-    print("Preorder:")
-    tree.preorder()
-    print("Inorder:")
-    tree.inorder()
-    print("Postorder:")
-    tree.postorder()
+    x = tree.inorder()
 
+    if len(x) % 2 == 0:
+        median = (x[len(x)//2] + x[(len(x)//2)-1]) / 2
+    else:
+        median = x[len(x)//2]
+    print("Sorted:", tree.inorder())
+    print("Median: " + str(median))
+    print("Pre-order:", tree.preorder())
+    print("In-order:", tree.inorder())
+    print("Post-order:", tree.postorder())
 ### to dla drzewa BST
 
 def UI(node, insert,tree_type):
@@ -94,12 +106,18 @@ Exit        Exit the program
     if not sys.stdin.isatty():
         input_data = sys.stdin.read().split()
         try:
-            data = [int(x) for x in input_data if x.isdigit()]
-            #node = ' '.join(str(data[0]))
+            data = []
+            for x in input_data: #ignoring repetitive inserts
+                if x.isdigit():
+                    value = int(x)
+                    if value not in data:
+                        data.append(value)
+        
             node = str(len(data))
-            insert = ' '.join(str(x) for x in data[0:])
-        except EOFError:
-            print("Error reading input.")
+            insert = ' '.join(str(x) for x in data)
+
+        except ValueError:
+            print("Invalid input format")
         print("nodes> " + node)
         print("insert> " + insert)
 
