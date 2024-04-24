@@ -88,18 +88,34 @@ def traverse(arr):
     print("Pre-order:", tree.preorder())
     print("In-order:", tree.inorder())
     print("Post-order:", tree.postorder())
+
+def delete(arr):
+    tree = TreeNode(arr[0])
+    for key in arr[1:]:
+        tree.insert(key)
+    
+    x = tree.postorder()
+    y = str(x)
+    print("deleting: " + y)
+    while x:
+        x.pop()
+    if x == []:
+        print("Tree succesfully removed")
+
+
 ### to dla drzewa BST
 
 def UI(node, insert,tree_type):
     action_list = {'1':'Help', '2':'Print', '3':'FindMinMax', '4':'Remove', '5':'Delete', '6':'Export', '7':'Rebalace', '8': 'Exit'}
     help = '''
-Help        Show this massage
-Print       Prints the tree using In-order, Pre-order, Post-order
-Remove      Remove elements from tree
-Delete      Delete the whole tree
-Export      Export the tree to tikzpicture
-Rebalance   Rebalance the tree
-Exit        Exit the program
+Help            Show this massage
+Print           Prints the tree using In-order, Pre-order, Post-order
+FindMinMax      Finds minimal and maximal value
+Remove          Remove elements from tree
+Delete          Delete the whole tree
+Export          Export the tree to tikzpicture
+Rebalance       Rebalance the tree
+Exit            Exit the program
 '''
 
     # Data as heredoc
@@ -133,7 +149,7 @@ Exit        Exit the program
         if action_list['4'] in input_data:
             print(help)
         if action_list['5'] in input_data:
-            print(help)
+            delete(data)
         if action_list['6'] in input_data:
             print(help)
         if action_list['7'] in input_data:
@@ -142,50 +158,50 @@ Exit        Exit the program
             sys.exit(0)
     
     # user input 
-    else:
-        node = input("nodes> ")
-        while not node.isdigit():
-            print("Error: expected nodes as single integer")
-            node = input("nodes> ")
+    #else:
+    #    node = input("nodes> ")
+    #    while not node.isdigit():
+    #        print("Error: expected nodes as single integer")
+    #        node = input("nodes> ")
 
-        while True:
-            insert = input("insert> ")
-            input_data = insert.split()
-            #print(input_data)
-            for x in input_data:
-                if not x.isdigit():
-                    a = False
-                else:
-                    a = True
-            if a == True:
-                break
-            else:
-                print("Error: expected insert as a sequence of integers separated by a single space")
+    #    while True:
+    #        insert = input("insert> ")
+    #        input_data = insert.split()
+    #        #print(input_data)
+    #        for x in input_data:
+    #            if not x.isdigit():
+    #                a = False
+    #            else:
+    #                a = True
+    #        if a == True:
+    #            break
+    #        else:
+    #            print("Error: expected insert as a sequence of integers separated by a single space")
 
-        node = int(node)            
-        input_data = [int(num) for num in input_data]
-        if node != len(input_data):
-            print("Error: nodes value do not match insert amount")
-            sys.exit(1)
+    #    node = int(node)            
+    #    input_data = [int(num) for num in input_data]
+    #    if node != len(input_data):
+    #        print("Error: nodes value do not match insert amount")
+    #        sys.exit(1)
 
-        while True:
-            action = input("action> ")
-            if action == action_list['1']:
-                print(help)
-            elif action == action_list['2']:
-                print("tutaj funkcja print")
-            elif action == action_list['3']:
-                print("tutaj funkcja remove")
-            elif action == action_list['4']:
-                print("tutaj funkcja delete")
-            elif action == action_list['5']:
-                print("tutaj funkcja export") 
-            elif action == action_list['6']:
-                print("tutaj funkcja rebalance")
-            elif action == action_list['7']:
-                sys.exit(0)
-            else:
-                print('Error: unknown command. Use "Help" to see all commands')
+    #    while True:
+    #        action = input("action> ")
+    #        if action == action_list['1']:
+    #            print(help)
+    #        elif action == action_list['2']:
+    #            print("tutaj funkcja print")
+    #        elif action == action_list['3']:
+    #            print("tutaj funkcja remove")
+    #        elif action == action_list['4']:
+    #            print("tutaj funkcja delete")
+    #        elif action == action_list['5']:
+    #            print("tutaj funkcja export") 
+    #        elif action == action_list['6']:
+    #            print("tutaj funkcja rebalance")
+    #        elif action == action_list['7']:
+    #            sys.exit(0)
+    #        else:
+    #            print('Error: unknown command. Use "Help" to see all commands')
 
 
 def main():
