@@ -87,12 +87,18 @@ class TreeNode:
                 parent.left = self.left if self.left else self.right
             elif parent.right == self:  # wezel z prawym potomkiem
                 parent.right = self.left if self.left else self.right
-        
 
-def min_max(arr):
+def create_tree(arr):
+    if not arr:
+        return None
     tree = TreeNode(arr[0])
     for key in arr[1:]:
         tree.insert(key)
+    return tree
+
+def min_max(tree):
+    if not tree:
+        return
 
     min = tree.min()
     max = tree.max()
@@ -100,11 +106,9 @@ def min_max(arr):
     print("Min:", min)
     print("Max:", max)
 
-def traverse(arr):
-
-    tree = TreeNode(arr[0])
-    for key in arr[1:]:
-        tree.insert(key)
+def traverse(tree):
+    if not tree:
+        return
     
     x = tree.inorder()
 
@@ -118,11 +122,9 @@ def traverse(arr):
     print("In-order:", tree.inorder())
     print("Post-order:", tree.postorder())
 
-def remove_node(arr, rnodes): 
-    tree = TreeNode(arr[0])
-    for key in arr[1:]:
-        tree.insert(key)
-    
+def remove_node(tree, rnodes): 
+    if not tree:
+        return
     for rnode in rnodes:
         tree.remove(rnode)
 
@@ -130,10 +132,9 @@ def remove_node(arr, rnodes):
     print("In-order:", tree.inorder())
     print("Post-order:", tree.postorder())
 
-def delete(arr): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na wykladzie
-    tree = TreeNode(arr[0])
-    for key in arr[1:]:
-        tree.insert(key)
+def delete(tree): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na wykladzie
+    if not tree:
+        return
     
     x = tree.postorder()
     y = str(x)
@@ -177,27 +178,29 @@ Exit            Exit the program
         print("nodes> " + node)
         print("insert> " + insert)
 
+        if tree_type == "BST":
+            array = create_tree(data) # stworzenie drzewa BST
+        elif tree_type == "AVL":
+            array = None 
+        else: 
+            print("Error: wrong type of tree")
+            sys.exit(1)
         if action_list['1'] in input_data:
             print(help)
         if action_list['2'] in input_data:
-            if tree_type == "BST":
-                traverse(data)
-            else:
-                sys.exit(1)
+            traverse(array)
         if action_list['3'] in input_data:
-            min_max(data)
+            min_max(array)
         if action_list['4'] in input_data:
             index = input_data.index(action_list['4']) + 1
-            #print(input_data)
-            #print(len(input_data))
             rnodes = []
             while index < len(input_data) and input_data[index].isdigit():
                 rnodes.append(input_data[index])
                 index += 1
             print("Removing nodes:", rnodes)
-            remove_node(data, rnodes)
+            remove_node(array, rnodes)
         if action_list['5'] in input_data:
-            delete(data)
+            delete(array)
         if action_list['6'] in input_data:
             print(help)
         if action_list['7'] in input_data:
