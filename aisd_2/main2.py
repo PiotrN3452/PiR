@@ -59,6 +59,35 @@ class TreeNode:
         if self.right:
             return self.right.max()
         return self.key
+    
+    def remove(self, key, parent=None):
+        if int(key) < self.key:
+            if self.left:
+                self.left.remove(key, self)
+        elif int(key) > self.key:
+            if self.right:
+                self.right.remove(key, self)
+        else:
+            if self.left and self.right:  # wezel z dwoma potomkami - jako korzen w podrzewie przyjety jest maksymalny element w lewym podrzewie
+                successor = self.left.max()
+                self.key = successor
+                self.left.remove(successor, self)
+            elif parent is None:  # korzen z jednym lub bez potomka
+                if self.left:
+                    self.key = self.left.key
+                    self.left = self.left.left
+                    self.right = self.left.right
+                elif self.right:
+                    self.key = self.right.key
+                    self.left = self.right.left
+                    self.right = self.right.right
+                else:
+                    self.key = None
+            elif parent.left == self:  # wezel z lewym potomkiem
+                parent.left = self.left if self.left else self.right
+            elif parent.right == self:  # wezel z prawym potomkiem
+                parent.right = self.left if self.left else self.right
+        
 
 def min_max(arr):
     tree = TreeNode(arr[0])
@@ -89,7 +118,19 @@ def traverse(arr):
     print("In-order:", tree.inorder())
     print("Post-order:", tree.postorder())
 
-def delete(arr):
+def remove_node(arr, rnodes): 
+    tree = TreeNode(arr[0])
+    for key in arr[1:]:
+        tree.insert(key)
+    
+    for rnode in rnodes:
+        tree.remove(rnode)
+
+    print("Pre-order:", tree.preorder())
+    print("In-order:", tree.inorder())
+    print("Post-order:", tree.postorder())
+
+def delete(arr): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na wykladzie
     tree = TreeNode(arr[0])
     for key in arr[1:]:
         tree.insert(key)
@@ -101,7 +142,6 @@ def delete(arr):
         x.pop()
     if x == []:
         print("Tree succesfully removed")
-
 
 ### to dla drzewa BST
 
@@ -118,12 +158,12 @@ Rebalance       Rebalance the tree
 Exit            Exit the program
 '''
 
-    # Data as heredoc
+    # dane jako heredoc
     if not sys.stdin.isatty():
         input_data = sys.stdin.read().split()
         try:
             data = []
-            for x in input_data: #ignoring repetitive inserts
+            for x in input_data: #ignorowanie powtarzajacych sie wezlow
                 if x.isdigit():
                     value = int(x)
                     if value not in data:
@@ -147,7 +187,15 @@ Exit            Exit the program
         if action_list['3'] in input_data:
             min_max(data)
         if action_list['4'] in input_data:
-            print(help)
+            index = input_data.index(action_list['4']) + 1
+            #print(input_data)
+            #print(len(input_data))
+            rnodes = []
+            while index < len(input_data) and input_data[index].isdigit():
+                rnodes.append(input_data[index])
+                index += 1
+            print("Removing nodes:", rnodes)
+            remove_node(data, rnodes)
         if action_list['5'] in input_data:
             delete(data)
         if action_list['6'] in input_data:
