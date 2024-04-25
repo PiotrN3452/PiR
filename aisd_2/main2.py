@@ -1,5 +1,216 @@
 import sys
 
+class AVLTreeNode:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.height = 1
+
+class AVLTree:
+    def __init__(self):
+        self.root = None
+
+    def _insert(self, node, key):
+        if not node:
+            return AVLTreeNode(key)
+        if key < node.key:
+            node.left = self._insert(node.left, key)
+        else:
+            node.right = self._insert(node.right, key)
+
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+
+        balance = self._get_balance(node)
+
+        # Rotacje, jeśli drzewo staje się niezrównoważone
+        if balance > 1:
+            if key < node.left.key:
+                return self._right_rotate(node)
+            else:
+                node.left = self._left_rotate(node.left)
+                return self._right_rotate(node)
+        if balance < -1:
+            if key > node.right.key:
+                return self._left_rotate(node)
+            else:
+                node.right = self._right_rotate(node.right)
+                return self._left_rotate(node)
+
+        return node
+
+    def insert(self, key):
+        self.root = self._insert(self.root, key)
+
+    def _remove(self, node, key):
+        key = int(key)
+        if not node:
+            return node
+
+        if key < node.key:
+            node.left = self._remove(node.left, key)
+        elif key > node.key:
+            node.right = self._remove(node.right, key)
+        else:
+            if node.left is None:
+                temp = node.right
+                node = None
+                return temp
+            elif node.right is None:
+                temp = node.left
+                node = None
+                return temp
+
+            temp = self._min_value_node(node.right)
+            node.key = temp.key
+            node.right = self._remove(node.right, temp.key)
+
+        if node is None:
+            return node
+
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+
+        balance = self._get_balance(node)
+
+        if balance > 1:
+            if self._get_balance(node.left) >= 0:
+                return self._right_rotate(node)
+            else:
+                node.left = self._left_rotate(node.left)
+                return self._right_rotate(node)
+        if balance < -1:
+            if self._get_balance(node.right) <= 0:
+                return self._left_rotate(node)
+            else:
+                node.right = self._right_rotate(node.right)
+                return self._left_rotate(node)
+
+        return node
+
+    def remove(self, key):
+        self.root = self._remove(self.root, key)
+
+    def _min_value_node(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+    def min(self):
+        if not self.root:
+            return None
+        return self._min_value_node(self.root).key
+
+    def _max_value_node(self, node):
+        current = node
+        while current.right is not None:
+            current = current.right
+        return current
+
+    def max(self):
+        if not self.root:
+            return None
+        return self._max_value_node(self.root).key
+
+    def _get_height(self, node):
+        if not node:
+            return 0
+        return node.height
+
+    def _get_balance(self, node):
+        if not node:
+            return 0
+        return self._get_height(node.left) - self._get_height(node.right)
+
+    def _left_rotate(self, z):
+        y = z.right
+        T2 = y.left
+
+        y.left = z
+        z.right = T2
+
+        z.height = 1 + max(self._get_height(z.left), self._get_height(z.right))
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
+
+        return y
+
+    def _right_rotate(self, z):
+        y = z.left
+        T3 = y.right
+
+        y.right = z
+        z.left = T3
+
+        z.height = 1 + max(self._get_height(z.left), self._get_height(z.right))
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
+
+        return y
+
+    def inorder(self):
+        result = []
+        self._inorder_traverse(self.root, result)
+        return result
+
+    def _inorder_traverse(self, node, result):
+        if node:
+            self._inorder_traverse(node.left, result)
+            result.append(node.key)
+            self._inorder_traverse(node.right, result)
+
+    def preorder(self):
+        result = []
+        self._preorder_traverse(self.root, result)
+        return result
+
+    def _preorder_traverse(self, node, result):
+        if node:
+            result.append(node.key)
+            self._preorder_traverse(node.left, result)
+            self._preorder_traverse(node.right, result)
+
+    def postorder(self):
+        result = []
+        self._postorder_traverse(self.root, result)
+        return result
+
+    def _postorder_traverse(self, node, result):
+        if node:
+            self._postorder_traverse(node.left, result)
+            self._postorder_traverse(node.right, result)
+            result.append(node.key)
+    def bst_to_tikz(self):
+        tikz_code = []
+
+        def traverse(node, level=0):
+            if node:
+                tikz_code.append('  ' * level + f"node {{{node.key}}}")  # Add node with key
+                if node.left:
+                    tikz_code.append('  ' * level + "child {")
+                    traverse(node.left, level + 1)
+                    tikz_code.append('  ' * level + "}")
+                if node.right:
+                    tikz_code.append('  ' * level + "child {")
+                    traverse(node.right, level + 1)
+                    tikz_code.append('  ' * level + "}")
+
+        if self.root:
+            tikz_code.append("\\documentclass{standalone}")
+            tikz_code.append("\\usepackage{tikz}")
+            tikz_code.append("\\begin{document}")
+            tikz_code.append("\\begin{tikzpicture}[level distance=10mm, every node/.style={circle, draw}]")
+            tikz_code.append("\\node {" + str(self.root.key) + "}")
+            traverse(self.root, 1)
+            tikz_code.append(";")  # Add semicolon at the end of the last subtree
+            tikz_code.append("\\end{tikzpicture}")
+            tikz_code.append("\\end{document}")
+
+        return "\n".join(tikz_code)
+def create_avl_tree(arr):
+    avl_tree = AVLTree()
+    for key in arr:
+        avl_tree.insert(key)
+    return avl_tree
+
 
 ### to dla drzewa BST
 class TreeNode:
@@ -127,6 +338,7 @@ def remove_node(tree, rnodes):
         return
     for rnode in rnodes:
         tree.remove(rnode)
+        
 
     print("Pre-order:", tree.preorder())
     print("In-order:", tree.inorder())
@@ -135,7 +347,6 @@ def remove_node(tree, rnodes):
 def delete(tree): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na wykladzie
     if not tree:
         return
-    
     x = tree.postorder()
     y = str(x)
     print("deleting: " + y)
@@ -189,7 +400,8 @@ Export          Export the tree to tikzpicture
 Rebalance       Rebalance the tree
 Exit            Exit the program
 '''
-
+    global tree_type_c
+    tree_type_c = tree_type
     # dane jako heredoc
     if not sys.stdin.isatty():
         input_data = sys.stdin.read().split()
@@ -212,7 +424,7 @@ Exit            Exit the program
         if tree_type == "BST":
             array = create_tree(data) # stworzenie drzewa BST
         elif tree_type == "AVL":
-            array = None 
+            array = create_avl_tree(data) 
         else: 
             print("Error: wrong type of tree")
             sys.exit(1)
@@ -233,8 +445,11 @@ Exit            Exit the program
         if action_list['5'] in input_data:
             delete(array)
         if action_list['6'] in input_data:
-            tikz_picture = bst_to_tikz(array)
-            print(tikz_picture)
+            if tree_type == "AVL":
+                print(array.bst_to_tikz())
+            else:
+                tikz_picture = bst_to_tikz(array)
+                print(tikz_picture)
         if action_list['7'] in input_data:
             print(help)    
         if action_list['8'] in input_data:
