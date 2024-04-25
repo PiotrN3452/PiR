@@ -203,8 +203,18 @@ class AVLTree:
             tikz_code.append(";")  # Add semicolon at the end of the last subtree
             tikz_code.append("\\end{tikzpicture}")
             tikz_code.append("\\end{document}")
-
         return "\n".join(tikz_code)
+    
+    def _delete_tree_postorder(self, node):
+        if node:
+            self._delete_tree_postorder(node.left)
+            self._delete_tree_postorder(node.right)
+            del node
+
+    def delete_tree_postorder(self):
+        self._delete_tree_postorder(self.root)
+        self.root = None
+        
 def create_avl_tree(arr):
     avl_tree = AVLTree()
     for key in arr:
@@ -240,7 +250,13 @@ class TreeNode:
         if self.right:
             self.right.inorder(values)
         return values
-
+    def delete_tree_postorder(self):
+        if self:
+            if self.left:
+                self.left.delete_tree_postorder()
+            if self.right:
+                self.right.delete_tree_postorder()
+            del self
     def preorder(self, values = None):
         if values is None:
             values = []
@@ -299,6 +315,7 @@ class TreeNode:
             elif parent.right == self:  # wezel z prawym potomkiem
                 parent.right = self.left if self.left else self.right
 
+
 def create_tree(arr):
     if not arr:
         return None
@@ -349,9 +366,8 @@ def delete(tree): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na 
         return
     x = tree.postorder()
     y = str(x)
+    tree.delete_tree_postorder()
     print("deleting: " + y)
-    while x:
-        x.pop()
     if x == []:
         print("Tree succesfully removed")
 
