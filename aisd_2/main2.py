@@ -144,6 +144,37 @@ def delete(tree): #usuwanie drzewa BST z wykorzystaniem post-order - tak jak na 
     if x == []:
         print("Tree succesfully removed")
 
+def bst_to_tikz(root):
+    tikz_code = []
+
+    def traverse(node, level=0):
+        if node:
+            tikz_code.append('  ' * level + f"node {{{node.key}}}")  # Add node with key
+            if node.left:
+                tikz_code.append('  ' * level + "child {")
+                traverse(node.left, level + 1)
+                tikz_code.append('  ' * level + "}")
+            if node.right:
+                tikz_code.append('  ' * level + "child {")
+                traverse(node.right, level + 1)
+                tikz_code.append('  ' * level + "}")
+
+    tikz_code.append("\\documentclass{standalone}")
+    tikz_code.append("\\usepackage{tikz}")
+    tikz_code.append("\\begin{document}")
+    tikz_code.append("\\begin{tikzpicture}[level distance=10mm, every node/.style={circle, draw}]")
+    tikz_code.append("\\node {" + str(root.key) + "}")
+    traverse(root, 1)
+    tikz_code.append(";")  # Add semicolon at the end of the last subtree
+    tikz_code.append("\\end{tikzpicture}")
+    tikz_code.append("\\end{document}")
+
+    return "\n".join(tikz_code)
+
+
+
+
+
 ### to dla drzewa BST
 
 def UI(node, insert,tree_type):
@@ -202,7 +233,8 @@ Exit            Exit the program
         if action_list['5'] in input_data:
             delete(array)
         if action_list['6'] in input_data:
-            print(help)
+            tikz_picture = bst_to_tikz(array)
+            print(tikz_picture)
         if action_list['7'] in input_data:
             print(help)    
         if action_list['8'] in input_data:
