@@ -314,8 +314,7 @@ class TreeNode:
                 parent.left = self.left if self.left else self.right
             elif parent.right == self:  # wezel z prawym potomkiem
                 parent.right = self.left if self.left else self.right
-
-
+     
 def create_tree(arr):
     if not arr:
         return None
@@ -401,11 +400,10 @@ def bst_to_tikz(root):
 
 
 
-
 ### to dla drzewa BST
 
 def UI(node, insert,tree_type):
-    action_list = {'1':'Help', '2':'Print', '3':'FindMinMax', '4':'Remove', '5':'Delete', '6':'Export', '7':'Rebalace', '8': 'Exit'}
+    action_list = {'1':'Help', '2':'Print', '3':'FindMinMax', '4':'Remove', '5':'Delete', '6':'Export', '7':'Rebalance', '8': 'Exit'}
     help = '''
 Help            Show this massage
 Print           Prints the tree using In-order, Pre-order, Post-order
@@ -467,7 +465,18 @@ Exit            Exit the program
                 tikz_picture = bst_to_tikz(array)
                 print(tikz_picture)
         if action_list['7'] in input_data:
-            print(help)    
+            if tree_type == 'AVL':
+                print("drzewo AVL samo się balansuje, nie ma potrzeby balansowania zewnętrznie")
+            else:
+                print("Pre-order:", array.preorder())
+                print("In-order:", array.inorder())
+                print("Post-order:", array.postorder())
+                array2 = create_avl_tree(data)
+                array = create_tree(array2.preorder())
+                print("Pre-order:", array.preorder())
+                print("In-order:", array.inorder())
+                print("Post-order:", array.postorder())
+                
         if action_list['8'] in input_data:
             sys.exit(0)
     
