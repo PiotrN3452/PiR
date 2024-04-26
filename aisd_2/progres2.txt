@@ -1,10 +1,10 @@
 projekt nr. 2
 
 + funkcja tworzenia drzewa BST
-- funkcja tworzenia drzewa AVL
++ funkcja tworzenia drzewa AVL
 + printowanie drzewa w pre-order, in-order, post-order
 + funkcja usuwania elementu z drzewa
-- rebalansowanie drzewa
++ rebalansowanie drzewa
 + funkcja znajdowania minimalnej i maksymalnej wartosci (ale bez uzycia funkcji pythonowej)
-/ inerfejs uzytkownika
++ inerfejs uzytkownika
 - sprawozdanie (czas do 3.04.2024)
