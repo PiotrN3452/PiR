@@ -36,28 +36,19 @@ class DirectedGraph:
         stack[node] = False
         return False
 
-    def generate_acyclic_graph(self, saturation):
-        edges_to_add = int(saturation * self.num_nodes * (self.num_nodes - 1) / 200)
-        nodes_to_visit = list(range(self.num_nodes))
+    def generate_tree(self):
+        # Tworzenie drzewa - łączenie losowych wierzchołków w sposób zapewniający acykliczność
+        nodes_to_visit = list(range(1, self.num_nodes))
         random.shuffle(nodes_to_visit)
 
-        for i in range(self.num_nodes - 1):
-            source = nodes_to_visit[i]
-            target = nodes_to_visit[i + 1]
-            self.add_edge(source, target)
-            edges_to_add -= 1
-
-        for _ in range(edges_to_add):
-            source = random.choice(nodes_to_visit)
-            target = random.choice(nodes_to_visit)
-            while self.adjacency_matrix[source][target] == 1 or source == target:
-                source = random.choice(nodes_to_visit)
-                target = random.choice(nodes_to_visit)
-            self.add_edge(source, target)
+        for node in nodes_to_visit:
+            parent = random.choice(range(node))
+            self.add_edge(parent, node)
 
     def print_adjacency_matrix(self):
         for row in self.adjacency_matrix:
             print(" ".join(map(str, row)))
+
     
 def main():
     
@@ -84,7 +75,7 @@ def main():
         nodes = int(nodes)
         saturation = int(saturation)
         graph = DirectedGraph(nodes)
-        graph.generate_acyclic_graph(saturation)
+        graph.generate_tree()
         graph.print_adjacency_matrix()
 
 if __name__ == "__main__":
