@@ -1,5 +1,6 @@
 import sys
 import random
+import numpy as np
 
 sys.setrecursionlimit(10**6)
 
@@ -45,9 +46,8 @@ class DirectedGraph:
             parent = random.choice(range(node))
             self.add_edge(parent, node)
 
-    def print_adjacency_matrix(self):
-        for row in self.adjacency_matrix:
-            print(" ".join(map(str, row)))
+    def adjacency_matrix_as_numpy(self):
+        return np.array(self.adjacency_matrix)
 
     
 def main():
@@ -76,7 +76,20 @@ def main():
         saturation = int(saturation)
         graph = DirectedGraph(nodes)
         graph.generate_tree()
-        graph.print_adjacency_matrix()
+        adjacency_matrix = graph.adjacency_matrix_as_numpy()
+        print(adjacency_matrix)
+
+    if sys.argv[1] == "--user-provided":
+        input_data = sys.stdin.read().strip().split('\n')
+        nodes = len(input_data)
+        graph = DirectedGraph(nodes)
+        for i, line in enumerate(input_data):
+            successors = list(map(int, line.split()))
+            for successor in successors:
+                graph.add_edge(i, successor-1)  # Subtracting 1 to adjust to 0-based indexing
+
+        adjacency_matrix = graph.adjacency_matrix_as_numpy()
+        print(adjacency_matrix)
 
 if __name__ == "__main__":
     main()
