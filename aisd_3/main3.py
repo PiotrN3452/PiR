@@ -77,8 +77,8 @@ def main():
         nodes = input_data[1]
         if len(input_data) > 2:
             saturation = input_data[2]
-            if input_data[0] in ["list","matrix","table"]:
-                reprezentation = input_data[0]
+            if input_data[0].lower() in ["list","matrix","table"]: #tu dodane .lower() zeby zamienialo dane na male literki przez co mozna uzywac duzych liter
+                reprezentation = input_data[0].lower()
             else:
                 print("Input data error: expecter value for type")
                 sys.exit(1)
@@ -134,6 +134,16 @@ def edge_list(adjacency_matrix):
             if adjacency_matrix[i, j] == 1:
                 edge_list.append([i + 1, j + 1])
     print(np.array(edge_list))
+
+def find(adjacency_matrix, actions):
+    for action in actions:
+        if isinstance(action, list) and action[0] == 'find':
+            edge = (action[1], action[2])  # Krawędź jako para wierzchołków
+            if adjacency_matrix[edge[0]-1, edge[1]-1] == 1:  # Sprawdź, czy krawędź istnieje w macierzy
+                print(f"True: edge {edge[0]}, {edge[1]} exists in the graph")
+            else:
+                print(f"False: edge {edge[0]}, {edge[1]} does not exist in the graph")
+    
         
 def actions(input_data):
     global actions
@@ -214,8 +224,9 @@ def actions_start(act):
         if reprezentation == "table":
             edge_list(adjacency_matrix)
             print(adjacency_matrix)
-    if "find" in act:
-        pass
+    for action in act:
+        if isinstance(action, list) and action[0] == 'find':
+            find(adjacency_matrix,actions)
     if "breath-first search" in act:
         pass
     if "depth-first search" in act:
