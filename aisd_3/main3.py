@@ -49,7 +49,14 @@ class DirectedGraph:
     def adjacency_matrix_as_numpy(self):
         return np.array(self.adjacency_matrix)
 
-    
+def type_of_graph(input_data):
+    if input_data[0] in ["list","matrix","table"]:
+        
+        return input_data[0]
+    else:
+        print("Input data error: expecter value for type")
+        sys.exit(1)
+        
 def main():
     
 
@@ -64,11 +71,17 @@ def main():
         if not input_data[0]:
             print("Error: no arguments provided")
             sys.exit(1)
-        nodes = input_data[0]
-        if len(input_data) > 1:
-            saturation = input_data[1]
+        nodes = input_data[1]
+        if len(input_data) > 2:
+            saturation = input_data[2]
+            if input_data[0] in ["list","matrix","table"]:
+                reprezentation = input_data[0]
+            else:
+                print("Input data error: expecter value for type")
+                sys.exit(1)
         else:
             print("Input data error: expected value for saturation")
+            sys.exit(1)
         print("nodes> " + nodes)
         if saturation:
             print("saturation> " + saturation)
@@ -78,9 +91,12 @@ def main():
         graph.generate_tree()
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
+        print(reprezentation)
 
     if sys.argv[1] == "--user-provided":
         input_data = sys.stdin.read().strip().split('\n')
+        reprezentation = type_of_graph(input_data)
+        input_data.pop(0)
         nodes = len(input_data)
         graph = DirectedGraph(nodes)
         for i, line in enumerate(input_data):
@@ -90,6 +106,7 @@ def main():
 
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
+        print(reprezentation)
 
 if __name__ == "__main__":
     main()
