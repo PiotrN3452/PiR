@@ -71,6 +71,9 @@ def main():
         if not input_data[0]:
             print("Error: no arguments provided")
             sys.exit(1)
+        print(input_data)
+        input_data = actions(input_data)
+        print(input_data)
         nodes = input_data[1]
         if len(input_data) > 2:
             saturation = input_data[2]
@@ -92,11 +95,13 @@ def main():
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
+        print(actions)
 
     if sys.argv[1] == "--user-provided":
         input_data = sys.stdin.read().strip().split('\n')
         reprezentation = type_of_graph(input_data)
         input_data.pop(0)
+        print(input_data)
         nodes = len(input_data)
         graph = DirectedGraph(nodes)
         for i, line in enumerate(input_data):
@@ -107,6 +112,77 @@ def main():
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
+        
+def actions(input_data):
+    global actions
+    actions = []
+    for i in reversed(input_data):
+        if "print" not in actions:
+            if i.lower() == "print":
+                actions.append("print")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "print":
+                        del input_data[j]
+        if "breath-first search" not in actions:
+            if i.lower() == "breath-first search":
+                actions.append("breath-first search")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "breath-first search":
+                        del input_data[j]    
+        if "depth-first search" not in actions:
+            if i.lower() == "depth-first search":
+                actions.append("depth-first search")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "depth-first search":
+                        del input_data[j]
+        if "sort" not in actions:
+            if i.lower() == "sort":
+                actions.append("sort")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "sort":
+                        del input_data[j]            
+        if "tarjan" not in actions:
+            if i.lower() == "tarjan":
+                actions.append("tarjan")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "tarjan":
+                        del input_data[j]            
+        if "kahn" not in actions:
+            if i.lower() == "kahn":
+                actions.append("kahn")
+                for j in range(len(input_data),0,-1):
+                    j -= 1
+                    element = input_data[j]
+                    if element.lower() == "kahn":
+                        del input_data[j]       
+        if i.lower() == "find":
+            find_obj = ["find"]
+            help_list = [x.lower() for x in input_data]
+            try:
+                find_obj.append(int(input_data[help_list.index("find") + 1]))
+                find_obj.append(int(input_data[help_list.index("find") + 2]))
+                del input_data[help_list.index("find") + 2]
+                del input_data[help_list.index("find") + 1]
+                del input_data[help_list.index("find")]
+            except:
+                print("error: no corect edge info after find action ")
+                sys.exit(1)
+            
+            actions.append(find_obj)
+        
+    return input_data
 
+                    
+            
 if __name__ == "__main__":
     main()
