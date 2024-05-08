@@ -58,8 +58,8 @@ def type_of_graph(input_data):
         sys.exit(1)
         
 def main():
-    
-
+    global reprezentation
+    global adjacency_matrix
     if  sys.argv[1] != "--generate" and sys.argv[1] != "--user-provided":
         print("Wrong argument: expected value <--argument> or <--user-provided>")
         sys.exit(1)
@@ -96,11 +96,14 @@ def main():
         print(adjacency_matrix)
         print(reprezentation)
         print(actions)
+        actions_start(actions)
 
     if sys.argv[1] == "--user-provided":
+        
         input_data = sys.stdin.read().strip().split('\n')
         reprezentation = type_of_graph(input_data)
         input_data.pop(0)
+        input_data = actions(input_data)
         print(input_data)
         nodes = len(input_data)
         graph = DirectedGraph(nodes)
@@ -108,10 +111,29 @@ def main():
             successors = list(map(int, line.split()))
             for successor in successors:
                 graph.add_edge(i, successor-1)  # Subtracting 1 to adjust to 0-based indexing
-
+        
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
+        actions_start(actions)
+        
+        
+
+def successor_list(adjacency_matrix):
+    for i in range(1, adjacency_matrix.shape[0] + 1):
+        successors = []
+        for j in range(1, adjacency_matrix.shape[1] + 1):
+            if adjacency_matrix[i - 1, j - 1] == 1:
+                successors.append(j)
+        print(f"{i} --> {successors}")
+
+def edge_list(adjacency_matrix):
+    edge_list = []
+    for i in range(adjacency_matrix.shape[0]):
+        for j in range(adjacency_matrix.shape[1]):
+            if adjacency_matrix[i, j] == 1:
+                edge_list.append([i + 1, j + 1])
+    print(np.array(edge_list))
         
 def actions(input_data):
     global actions
@@ -182,6 +204,29 @@ def actions(input_data):
         
     return input_data
 
+def actions_start(act):
+    if "print" in act:
+        if reprezentation == "matrix":
+            print(adjacency_matrix)
+        if reprezentation == "list":
+            successor_list(adjacency_matrix)
+            print(adjacency_matrix)
+        if reprezentation == "table":
+            edge_list(adjacency_matrix)
+            print(adjacency_matrix)
+    if "find" in act:
+        pass
+    if "breath-first search" in act:
+        pass
+    if "depth-first search" in act:
+        pass
+    if "sort" in act:
+        pass
+    if "kahn" in act:
+        pass
+    if "tarjan" in act:
+        pass
+    
                     
             
 if __name__ == "__main__":
