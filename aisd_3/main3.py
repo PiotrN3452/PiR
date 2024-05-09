@@ -77,6 +77,41 @@ class DirectedGraph:
 
         return traversal_order   
 
+    def kahn_topological_sort(self):
+        # Calculate in-degree for each node
+        in_degree = [0] * (self.num_nodes + 1)  # Adjust size for 1-based indexing
+        for i in range(1, self.num_nodes + 1):
+            for j in range(1, self.num_nodes + 1):
+                if self.adjacency_matrix[i-1][j-1] == 1:  # Adjust indices for 0-based internal representation
+                    in_degree[j] += 1
+
+        # Queue for nodes with no incoming edges
+        queue = deque()
+        for i in range(1, self.num_nodes + 1):
+            if in_degree[i] == 0:
+                queue.append(i)
+
+        topological_order = []
+        while queue:
+            node = queue.popleft()
+            topological_order.append(node)
+
+            # For each node m with an edge e from n to m
+            for m in range(1, self.num_nodes + 1):
+                if self.adjacency_matrix[node-1][m-1] == 1:  # Adjust indices for 0-based internal representation
+                    # Remove edge e from the graph
+                    in_degree[m] -= 1
+                    # If m has no other incoming edges then insert m into S
+                    if in_degree[m] == 0:
+                        queue.append(m)
+
+        # Check if topological sorting is possible (i.e., all nodes are processed)
+        if len(topological_order) != self.num_nodes:
+            print("Error: the graph has at least one cycle")
+            return None
+        else:
+            return topological_order
+
 def type_of_graph(input_data):
     if input_data[0] in ["list","matrix","table"]:
         
@@ -123,7 +158,7 @@ def main():
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
-        
+        print(actions)
         actions_start(actions,graph)
 
     if sys.argv[1] == "--user-provided":
@@ -210,6 +245,7 @@ def actions(input_data):
         if "kahn" not in actions:
             if i.lower() == "kahn":
                 actions.append("kahn")
+                print("kahn")
                 for j in range(len(input_data),0,-1):
                     j -= 1
                     element = input_data[j]
@@ -273,7 +309,7 @@ def actions_start(act,graph):
     if "sort" in act:
         pass
     if "kahn" in act:
-        pass
+        print(graph.kahn_topological_sort())
     if "tarjan" in act:
         pass
     
@@ -281,5 +317,5 @@ def actions_start(act,graph):
             
 if __name__ == "__main__":
     main()
-
+    print(actions)
 
