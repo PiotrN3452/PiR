@@ -199,73 +199,53 @@ def edge_list(adjacency_matrix):
     print(np.array(edge_list))
         
 def actions(input_data):
-    global actions
-    actions = []
-    for i in reversed(input_data):
-        if "print" not in actions:
-            if i.lower() == "print":
-                actions.append("print")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "print":
-                        del input_data[j]
-        if "breath-first_search" not in actions:
-            if i.lower() == "breath-first_search":
-                actions.append("breath-first_search")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "breath-first_search":
-                        del input_data[j]    
-        if "depth-first_search" not in actions:
-            if i.lower() == "depth-first_search":
-                actions.append("depth-first_search")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "depth-first_search":
-                        del input_data[j]
-        if "sort" not in actions:
-            if i.lower() == "sort":
-                actions.append("sort")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "sort":
-                        del input_data[j]            
-        if "tarjan" not in actions:
-            if i.lower() == "tarjan":
-                actions.append("tarjan")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "tarjan":
-                        del input_data[j]            
-        if "kahn" not in actions:
-            if i.lower() == "kahn":
-                actions.append("kahn")
-                print("kahn")
-                for j in range(len(input_data),0,-1):
-                    j -= 1
-                    element = input_data[j]
-                    if element.lower() == "kahn":
-                        del input_data[j]       
-        if i.lower() == "find":
-            find_obj = ["find"]
-            help_list = [x.lower() for x in input_data]
+    action_list = []
+    to_delete = []
+
+    # Reverse iterate to handle actions in the order they appear when processed
+    for index in range(len(input_data) - 1, -1, -1):
+        value = input_data[index].lower()
+
+        if value == "print" and "print" not in action_list:
+            action_list.append("print")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "print"])
+
+        elif value == "breath-first_search" and "breath-first_search" not in action_list:
+            action_list.append("breath-first_search")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "breath-first_search"])
+
+        elif value == "depth-first_search" and "depth-first_search" not in action_list:
+            action_list.append("depth-first_search")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "depth-first_search"])
+
+        elif value == "sort" and "sort" not in action_list:
+            action_list.append("sort")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "sort"])
+
+        elif value == "tarjan" and "tarjan" not in action_list:
+            action_list.append("tarjan")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "tarjan"])
+
+        elif value == "kahn" and "kahn" not in action_list:
+            action_list.append("kahn")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "kahn"])
+
+        elif value == "find":
             try:
-                find_obj.append(int(input_data[help_list.index("find") + 1]))
-                find_obj.append(int(input_data[help_list.index("find") + 2]))
-                del input_data[help_list.index("find") + 2]
-                del input_data[help_list.index("find") + 1]
-                del input_data[help_list.index("find")]
-            except:
-                print("error: no corect edge info after find action ")
+                # Assuming the next two values are integers as required
+                find_obj = ["find", int(input_data[index + 1]), int(input_data[index + 2])]
+                action_list.append(find_obj)
+                # Mark indices for deletion
+                to_delete.extend([index, index + 1, index + 2])
+            except (IndexError, ValueError):
+                print("error: no correct edge info after find action")
                 sys.exit(1)
-            
-            actions.append(find_obj)
-        
+
+    # Delete marked indices from input_data in reverse order to not mess up the indices
+    for index in sorted(set(to_delete), reverse=True):
+        del input_data[index]
+    global actions
+    actions =  action_list
     return input_data
 
 def find(adjacency_matrix, actions):
@@ -287,7 +267,66 @@ def dfs(graph):
     visited = [False] * len(graph)
     for u in range(len(graph)):
         if not visited[u]:
-            dfs_util(graph, u, visited)            
+            dfs_util(graph, u, visited)
+
+def tarjan(adjacency_matrix):
+    num_nodes = len(adjacency_matrix)
+    colors = ['white'] * num_nodes
+    L = []  
+    S = []  
+
+    # Funkcja pomocnicza do sprawdzania, czy istnieją białe następniki dla danego wierzchołka
+    def has_white_successor(u):
+        for v in range(num_nodes):
+            if adjacency_matrix[u][v] == 1 and colors[v] == 'white':
+                return True
+        return False
+
+    # Funkcja pomocnicza do wyboru białego wierzchołka startowego
+    def choose_starting_node():
+        for u in range(num_nodes):
+            if colors[u] == 'white' and not has_white_successor(u):
+                return u
+        return None
+
+    # Funkcja pomocnicza do cofania się do szarego poprzednika na ścieżce
+    def backtrack_to_gray_predecessor(u):
+        for v in range(num_nodes):
+            if adjacency_matrix[v][u] == 1 and colors[v] == 'gray':
+                return v
+        return None
+
+    # Funkcja główna do wykonywania sortowania topologicznego
+    def tarjan_util(u):
+        while u is not None:
+            colors[u] = 'gray'
+
+            
+            while has_white_successor(u):
+                for v in range(num_nodes):
+                    if adjacency_matrix[u][v] == 1 and colors[v] == 'white':
+                        u = v
+                        break
+                colors[u] = 'gray'
+
+            
+            colors[u] = 'black'
+            S.append(u)
+
+           
+            u = backtrack_to_gray_predecessor(u)
+
+    
+    u = choose_starting_node()
+    while u is not None:
+        tarjan_util(u)
+        u = choose_starting_node()  #
+
+    
+    while S:
+        L.append(S.pop() + 1) 
+
+    return L            
 
 def actions_start(act,graph):
     if "print" in act:
@@ -311,11 +350,11 @@ def actions_start(act,graph):
     if "kahn" in act:
         print(graph.kahn_topological_sort())
     if "tarjan" in act:
-        pass
+        topological_order = tarjan(adjacency_matrix)
+        print("Topological order:", topological_order)
     
                     
             
 if __name__ == "__main__":
     main()
     print(actions)
-
