@@ -1,7 +1,7 @@
 import sys
 import random
 import numpy as np
-
+from collections import deque
 sys.setrecursionlimit(10**6)
 
 class DirectedGraph:
@@ -41,6 +41,7 @@ class DirectedGraph:
         # Tworzenie drzewa - łączenie losowych wierzchołków w sposób zapewniający acykliczność
         nodes_to_visit = list(range(1, self.num_nodes))
         random.shuffle(nodes_to_visit)
+        print(nodes_to_visit)
 
         for node in nodes_to_visit:
             parent = random.choice(range(node))
@@ -48,6 +49,33 @@ class DirectedGraph:
 
     def adjacency_matrix_as_numpy(self):
         return np.array(self.adjacency_matrix)
+    def breath_first_traversal(self):
+        # Find the first node with outgoing edges to use as the root, adjusted for 1-based indexing
+        start_node = None
+        for i in range(1, self.num_nodes + 1):
+            if any(self.adjacency_matrix[i - 1]):  # Adjust index for 0-based internal representation
+                start_node = i
+                break
+
+        if start_node is None:
+            return []  # No suitable root node found, return empty list
+
+        visited = [False] * (self.num_nodes + 1)  # Adjust size for 1-based indexing
+        traversal_order = []
+        queue = deque()
+        queue.append(start_node)
+        visited[start_node] = True
+
+        while queue:
+            current_node = queue.popleft()
+            traversal_order.append(current_node)
+
+            for neighbor in range(1, self.num_nodes + 1):  # Adjust loop for 1-based indexing
+                if self.adjacency_matrix[current_node - 1][neighbor - 1] == 1 and not visited[neighbor]:  # Adjust indices for 0-based internal representation
+                    queue.append(neighbor)
+                    visited[neighbor] = True
+
+        return traversal_order   
 
 def type_of_graph(input_data):
     if input_data[0] in ["list","matrix","table"]:
@@ -95,8 +123,8 @@ def main():
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
-        print(actions)
-        actions_start(actions)
+        
+        actions_start(actions,graph)
 
     if sys.argv[1] == "--user-provided":
         
@@ -115,7 +143,7 @@ def main():
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
         print(adjacency_matrix)
         print(reprezentation)
-        actions_start(actions)
+        actions_start(actions,graph)
         
         
 
@@ -147,21 +175,21 @@ def actions(input_data):
                     element = input_data[j]
                     if element.lower() == "print":
                         del input_data[j]
-        if "breath-first search" not in actions:
-            if i.lower() == "breath-first search":
-                actions.append("breath-first search")
+        if "breath-first_search" not in actions:
+            if i.lower() == "breath-first_search":
+                actions.append("breath-first_search")
                 for j in range(len(input_data),0,-1):
                     j -= 1
                     element = input_data[j]
-                    if element.lower() == "breath-first search":
+                    if element.lower() == "breath-first_search":
                         del input_data[j]    
-        if "depth-first search" not in actions:
-            if i.lower() == "depth-first search":
-                actions.append("depth-first search")
+        if "depth-first_search" not in actions:
+            if i.lower() == "depth-first_search":
+                actions.append("depth-first_search")
                 for j in range(len(input_data),0,-1):
                     j -= 1
                     element = input_data[j]
-                    if element.lower() == "depth-first search":
+                    if element.lower() == "depth-first_search":
                         del input_data[j]
         if "sort" not in actions:
             if i.lower() == "sort":
@@ -204,7 +232,28 @@ def actions(input_data):
         
     return input_data
 
-def actions_start(act):
+def find(adjacency_matrix, actions):
+    for action in actions:
+        if isinstance(action, list) and action[0] == 'find':
+            edge = (action[1], action[2])  # Krawędź jako para wierzchołków
+            if adjacency_matrix[edge[0]-1, edge[1]-1] == 1:  # Sprawdź, czy krawędź istnieje w macierzy
+                print(f"True: edge {edge[0]}, {edge[1]} exists in the graph")
+            else:
+                print(f"False: edge {edge[0]}, {edge[1]} does not exist in the graph")
+def dfs_util(graph, u, visited): 
+    visited[u] = True
+    print(u+1)  # Wyświetlenie wierzchołka, który jest odwiedzany
+    for v in range(len(graph)):
+        if graph[u][v] == 1 and not visited[v]:
+            dfs_util(graph, v, visited)
+            
+def dfs(graph):
+    visited = [False] * len(graph)
+    for u in range(len(graph)):
+        if not visited[u]:
+            dfs_util(graph, u, visited)            
+
+def actions_start(act,graph):
     if "print" in act:
         if reprezentation == "matrix":
             print(adjacency_matrix)
@@ -214,11 +263,12 @@ def actions_start(act):
         if reprezentation == "table":
             edge_list(adjacency_matrix)
             print(adjacency_matrix)
-    if "find" in act:
-        pass
-    if "breath-first search" in act:
-        pass
-    if "depth-first search" in act:
+    for action in act:
+        if isinstance(action, list) and action[0] == 'find':
+            find(adjacency_matrix,actions)
+    if "breath-first_search" in act:
+        print(graph.breath_first_traversal())
+    if "depth-first_search" in act:
         pass
     if "sort" in act:
         pass
