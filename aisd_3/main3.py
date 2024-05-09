@@ -41,7 +41,7 @@ class DirectedGraph:
         # Tworzenie drzewa - łączenie losowych wierzchołków w sposób zapewniający acykliczność
         nodes_to_visit = list(range(1, self.num_nodes))
         random.shuffle(nodes_to_visit)
-        print(nodes_to_visit)
+        
 
         for node in nodes_to_visit:
             parent = random.choice(range(node))
@@ -134,9 +134,9 @@ def main():
         if not input_data[0]:
             print("Error: no arguments provided")
             sys.exit(1)
-        print(input_data)
+        
         input_data = actions(input_data)
-        print(input_data)
+        
         nodes = input_data[1]
         if len(input_data) > 2:
             saturation = input_data[2]
@@ -151,14 +151,15 @@ def main():
         print("nodes> " + nodes)
         if saturation:
             print("saturation> " + saturation)
-        nodes = int(nodes)
+        try:
+            nodes = int(nodes)
+        except:
+            print("Input data error: expecter value for nodes")
+            sys.exit(1)
         saturation = int(saturation)
         graph = DirectedGraph(nodes)
         graph.generate_tree()
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
-        print(adjacency_matrix)
-        print(reprezentation)
-        print(actions)
         actions_start(actions,graph)
 
     if sys.argv[1] == "--user-provided":
@@ -167,7 +168,6 @@ def main():
         reprezentation = type_of_graph(input_data)
         input_data.pop(0)
         input_data = actions(input_data)
-        print(input_data)
         nodes = len(input_data)
         graph = DirectedGraph(nodes)
         for i, line in enumerate(input_data):
@@ -176,8 +176,7 @@ def main():
                 graph.add_edge(i, successor-1)  # Subtracting 1 to adjust to 0-based indexing
         
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
-        print(adjacency_matrix)
-        print(reprezentation)
+        
         actions_start(actions,graph)
         
         
@@ -258,7 +257,7 @@ def find(adjacency_matrix, actions):
                 print(f"False: edge {edge[0]}, {edge[1]} does not exist in the graph")
 def dfs_util(graph, u, visited): 
     visited[u] = True
-    print(u+1)  # Wyświetlenie wierzchołka, który jest odwiedzany
+    print(u+1, end=' ')  # Wyświetlenie wierzchołka, który jest odwiedzany
     for v in range(len(graph)):
         if graph[u][v] == 1 and not visited[v]:
             dfs_util(graph, v, visited)
@@ -334,27 +333,28 @@ def actions_start(act,graph):
             print(adjacency_matrix)
         if reprezentation == "list":
             successor_list(adjacency_matrix)
-            print(adjacency_matrix)
+            
         if reprezentation == "table":
             edge_list(adjacency_matrix)
-            print(adjacency_matrix)
+            
     for action in act:
         if isinstance(action, list) and action[0] == 'find':
             find(adjacency_matrix,actions)
     if "breath-first_search" in act:
-        print(graph.breath_first_traversal())
+        print("bfs:", graph.breath_first_traversal())
     if "depth-first_search" in act:
         dfs(adjacency_matrix)
+        print()
     if "sort" in act:
         pass
     if "kahn" in act:
-        print(graph.kahn_topological_sort())
+        print("Topological order (kahn):" ,graph.kahn_topological_sort())
     if "tarjan" in act:
         topological_order = tarjan(adjacency_matrix)
-        print("Topological order:", topological_order)
+        print("Topological order (tarjan):", topological_order)
     
                     
             
 if __name__ == "__main__":
     main()
-    print(actions)
+    
