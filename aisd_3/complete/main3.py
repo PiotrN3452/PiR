@@ -10,7 +10,7 @@ sys.setrecursionlimit(10**6)
 def main():
     global reprezentation
     global adjacency_matrix
-    if  sys.argv[1] != "--generate" and sys.argv[1] != "--user-provided":
+    if  sys.argv[1] != "--generate" and sys.argv[1] != "--user-provided": #wybor typu programu - generowany lub wpisywany
         print("Wrong argument: expected value <--argument> or <--user-provided>")
         sys.exit(1)
     
@@ -118,7 +118,7 @@ def actions(input_data):
 
             
 
-def actions_start(act,graph):
+def actions_start(act,graph): #funkcja wywolywania innych funkcji przy okreslonych akcjach
     if "print" in act:
         if reprezentation == "matrix":
             print(adjacency_matrix)
