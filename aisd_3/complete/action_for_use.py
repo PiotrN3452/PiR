@@ -28,14 +28,14 @@ def edge_list(adjacency_matrix):
 def find(adjacency_matrix, actions):
     for action in actions:
         if isinstance(action, list) and action[0] == 'find':
-            edge = (action[1], action[2])  # Krawędź jako para wierzchołków
-            if adjacency_matrix[edge[0]-1, edge[1]-1] == 1:  # Sprawdź, czy krawędź istnieje w macierzy
+            edge = (action[1], action[2])  
+            if adjacency_matrix[edge[0]-1, edge[1]-1] == 1: 
                 print(f"True: edge {edge[0]}, {edge[1]} exists in the graph")
             else:
                 print(f"False: edge {edge[0]}, {edge[1]} does not exist in the graph")
 def dfs_util(graph, u, visited): 
     visited[u] = True
-    print(u+1, end=' ')  # Wyświetlenie wierzchołka, który jest odwiedzany
+    print(u+1, end=' ') 
     for v in range(len(graph)):
         if graph[u][v] == 1 and not visited[v]:
             dfs_util(graph, v, visited)
@@ -52,28 +52,28 @@ def tarjan(adjacency_matrix):
     L = []  
     S = []  
 
-    # Funkcja pomocnicza do sprawdzania, czy istnieją białe następniki dla danego wierzchołka
+    # funkcja pomocnicza do sprawdzania czy istnieja biale nastepniki dla wierzcholka
     def has_white_successor(u):
         for v in range(num_nodes):
             if adjacency_matrix[u][v] == 1 and colors[v] == 'white':
                 return True
         return False
 
-    # Funkcja pomocnicza do wyboru białego wierzchołka startowego
+    #funkcja pomocnicza do wyboru bialego wierzcholka poczatkowego    
     def choose_starting_node():
         for u in range(num_nodes):
             if colors[u] == 'white' and not has_white_successor(u):
                 return u
         return None
 
-    # Funkcja pomocnicza do cofania się do szarego poprzednika na ścieżce
+    #funkcja pomocnicza do cofania sie do szarego poprzednika
     def backtrack_to_gray_predecessor(u):
         for v in range(num_nodes):
             if adjacency_matrix[v][u] == 1 and colors[v] == 'gray':
                 return v
         return None
 
-    # Funkcja główna do wykonywania sortowania topologicznego
+     #funkcja glowna do wykonania tarjana
     def tarjan_util(u):
         while u is not None:
             colors[u] = 'gray'
