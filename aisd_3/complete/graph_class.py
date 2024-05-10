@@ -35,8 +35,7 @@ class DirectedGraph:
         stack[node] = False
         return False
 
-    def generate_tree(self):
-        # Tworzenie drzewa - łączenie losowych wierzchołków w sposób zapewniający acykliczność
+    def generate_tree(self): #tworzenie drzewa - laczenie losowych wierzcholkow w sposob acykliczny
         nodes_to_visit = list(range(1, self.num_nodes))
         random.shuffle(nodes_to_visit)
         
@@ -45,20 +44,19 @@ class DirectedGraph:
             parent = random.choice(range(node))
             self.add_edge(parent, node)
 
-    def adjacency_matrix_as_numpy(self):
+    def adjacency_matrix_as_numpy(self): #przedstawienie macierzy jako macierz numpy
         return np.array(self.adjacency_matrix)
     def breath_first_traversal(self):
-        # Find the first node with outgoing edges to use as the root, adjusted for 1-based indexing
         start_node = None
         for i in range(1, self.num_nodes + 1):
-            if any(self.adjacency_matrix[i - 1]):  # Adjust index for 0-based internal representation
+            if any(self.adjacency_matrix[i - 1]): 
                 start_node = i
                 break
 
         if start_node is None:
-            return []  # No suitable root node found, return empty list
+            return []
 
-        visited = [False] * (self.num_nodes + 1)  # Adjust size for 1-based indexing
+        visited = [False] * (self.num_nodes + 1) 
         traversal_order = []
         queue = deque()
         queue.append(start_node)
@@ -68,22 +66,20 @@ class DirectedGraph:
             current_node = queue.popleft()
             traversal_order.append(current_node)
 
-            for neighbor in range(1, self.num_nodes + 1):  # Adjust loop for 1-based indexing
-                if self.adjacency_matrix[current_node - 1][neighbor - 1] == 1 and not visited[neighbor]:  # Adjust indices for 0-based internal representation
+            for neighbor in range(1, self.num_nodes + 1):
+                if self.adjacency_matrix[current_node - 1][neighbor - 1] == 1 and not visited[neighbor]:  
                     queue.append(neighbor)
                     visited[neighbor] = True
 
         return traversal_order   
 
     def kahn_topological_sort(self):
-        # Calculate in-degree for each node
-        in_degree = [0] * (self.num_nodes + 1)  # Adjust size for 1-based indexing
+        in_degree = [0] * (self.num_nodes + 1)  
         for i in range(1, self.num_nodes + 1):
             for j in range(1, self.num_nodes + 1):
-                if self.adjacency_matrix[i-1][j-1] == 1:  # Adjust indices for 0-based internal representation
+                if self.adjacency_matrix[i-1][j-1] == 1: 
                     in_degree[j] += 1
 
-        # Queue for nodes with no incoming edges
         queue = deque()
         for i in range(1, self.num_nodes + 1):
             if in_degree[i] == 0:
@@ -94,16 +90,12 @@ class DirectedGraph:
             node = queue.popleft()
             topological_order.append(node)
 
-            # For each node m with an edge e from n to m
             for m in range(1, self.num_nodes + 1):
-                if self.adjacency_matrix[node-1][m-1] == 1:  # Adjust indices for 0-based internal representation
-                    # Remove edge e from the graph
+                if self.adjacency_matrix[node-1][m-1] == 1:  
                     in_degree[m] -= 1
-                    # If m has no other incoming edges then insert m into S
                     if in_degree[m] == 0:
                         queue.append(m)
 
-        # Check if topological sorting is possible (i.e., all nodes are processed)
         if len(topological_order) != self.num_nodes:
             print("Error: the graph has at least one cycle")
             return None
