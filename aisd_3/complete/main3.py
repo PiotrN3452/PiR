@@ -10,7 +10,7 @@ sys.setrecursionlimit(10**6)
 def main():
     global reprezentation
     global adjacency_matrix
-    if  sys.argv[1] != "--generate" and sys.argv[1] != "--user-provided": #wybor typu programu - generowany lub wpisywany
+    if  sys.argv[1] != "--generate" and sys.argv[1] != "--user-provided":
         print("Wrong argument: expected value <--argument> or <--user-provided>")
         sys.exit(1)
     
@@ -63,7 +63,6 @@ def main():
                 graph.add_edge(i, successor-1)  # Subtracting 1 to adjust to 0-based indexing
         
         adjacency_matrix = graph.adjacency_matrix_as_numpy()
-        
         actions_start(actions,graph)
          
 def actions(input_data):
@@ -86,9 +85,9 @@ def actions(input_data):
             action_list.append("depth-first_search")
             to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "depth-first_search"])
 
-        elif value == "sort" and "sort" not in action_list:
-            action_list.append("sort")
-            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "sort"])
+        elif value == "export" and "export" not in action_list:
+            action_list.append("export")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "export"])
 
         elif value == "tarjan" and "tarjan" not in action_list:
             action_list.append("tarjan")
@@ -118,7 +117,7 @@ def actions(input_data):
 
             
 
-def actions_start(act,graph): #funkcja wywolywania innych funkcji przy okreslonych akcjach
+def actions_start(act,graph):
     if "print" in act:
         if reprezentation == "matrix":
             print(adjacency_matrix)
@@ -134,10 +133,12 @@ def actions_start(act,graph): #funkcja wywolywania innych funkcji przy okreslony
     if "breath-first_search" in act:
         print("bfs:", graph.breath_first_traversal())
     if "depth-first_search" in act:
+        print("dfs:", end=" ")
         dfs(adjacency_matrix)
         print()
-    if "sort" in act:
-        pass
+    if "export" in act:
+        latex_code = adjacency_matrix_to_tikz(adjacency_matrix)
+        print(latex_code)
     if "kahn" in act:
         print("Topological order (kahn):" ,graph.kahn_topological_sort())
     if "tarjan" in act:

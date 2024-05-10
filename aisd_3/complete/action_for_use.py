@@ -104,3 +104,29 @@ def tarjan(adjacency_matrix):
         L.append(S.pop() + 1) 
 
     return L
+
+def adjacency_matrix_to_tikz(adjacency_matrix):
+    rows, cols = np.shape(adjacency_matrix)
+    tikz_code = "\\documentclass{article}\n"
+    tikz_code += "\\usepackage{tikz}\n"
+    tikz_code += "\\begin{document}\n\n"
+    tikz_code += "\\begin{figure}[ht]\n"
+    tikz_code += "  \\centering\n"
+    tikz_code += "  \\begin{tikzpicture}\n"
+    tikz_code += "    \\tikzstyle{vertex}=[draw, circle, minimum size=20pt, inner sep=0pt]\n"
+    
+    # Add vertices
+    for i in range(rows):
+        tikz_code += f"    \\node[vertex] (v{i+1}) at ({360*i/rows}:2) {{{i+1}}};\n"
+    
+    # Add edges
+    for i in range(rows):
+        for j in range(cols):
+            if adjacency_matrix[i][j] == 1:
+                tikz_code += f"    \\draw[-latex] (v{i+1}) -- (v{j+1});\n"
+    
+    tikz_code += "  \\end{tikzpicture}\n"
+    tikz_code += "\\end{figure}\n"
+    tikz_code += "\\end{document}\n"
+    
+    return tikz_code       
