@@ -73,6 +73,10 @@ def process_input(input_data):
         if value == "print" and "print" not in action_list:
             action_list.append("print")
             to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "print"])
+        
+        if value == "export" and "export" not in action_list:
+            action_list.append("export")
+            to_delete.extend([i for i, x in enumerate(input_data) if x.lower() == "export"])
 
         elif value == "euler" and "euler" not in action_list:
             action_list.append("euler")
@@ -99,6 +103,8 @@ def actions_start(act, graph):
     if "hamilton" in act:
         print("hamilton")
         print(graph)
-
+    if "export" in act:
+        print("export")
+        print(graph)
 if __name__ == "__main__":
     main()
