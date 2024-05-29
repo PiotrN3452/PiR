@@ -5,9 +5,50 @@ from collections import deque
 
 sys.setrecursionlimit(10**6)
 
+def create_hamiltonian_graph(nodes, saturation):
+    adjacency_matrix = np.zeros((nodes, nodes), dtype=int)
+
+    hamiltonian_cycle = list(range(nodes))
+    random.shuffle(hamiltonian_cycle)
+    for i in range(nodes - 1):
+        adjacency_matrix[hamiltonian_cycle[i], hamiltonian_cycle[i + 1]] = 1
+        adjacency_matrix[hamiltonian_cycle[i + 1], hamiltonian_cycle[i]] = 1
+    adjacency_matrix[hamiltonian_cycle[-1], hamiltonian_cycle[0]] = 1
+    adjacency_matrix[hamiltonian_cycle[0], hamiltonian_cycle[-1]] = 1
+
+    num_edges = int((nodes * (nodes - 1) / 2) * saturation)
+
+    while np.sum(adjacency_matrix) / 2 < num_edges:
+        u, v = random.sample(range(nodes), 2)
+        if u != v and adjacency_matrix[u, v] == 0:
+            adjacency_matrix[u, v] = 1
+            adjacency_matrix[v, u] = 1
+
+    for node in range(nodes):
+        while np.sum(adjacency_matrix[node]) % 2 != 0:
+            neighbor = random.choice(np.nonzero(adjacency_matrix[node])[0])
+            adjacency_matrix[node, neighbor] = 0
+            adjacency_matrix[neighbor, node] = 0
+            cycle_nodes = random.sample(range(nodes), 3)
+            adjacency_matrix[cycle_nodes[0], cycle_nodes[1]] = 1
+            adjacency_matrix[cycle_nodes[1], cycle_nodes[0]] = 1
+            adjacency_matrix[cycle_nodes[1], cycle_nodes[2]] = 1
+            adjacency_matrix[cycle_nodes[2], cycle_nodes[1]] = 1
+
+    return adjacency_matrix
+
+def display_adjacency_matrix(adjacency_matrix):
+    print(adjacency_matrix)
+
+
+
+
+
 def main():
     global actions
     global adjacency_matrix
+    global nodes
+    global saturation
 
     if len(sys.argv) < 2 or (sys.argv[1] != "--hamilton" and sys.argv[1] != "--non-hamilton"):
         print("Wrong argument: expected value <--hamilton> or <--non-hamilton>")
@@ -21,9 +62,15 @@ def main():
         
         input_data = process_input(input_data)
         nodes = input_data[0]
+        if int(nodes) <= 10:
+            print("Error: Expected nodes value greater than 10")
+            sys.exit(1)
         
         if len(input_data) > 1:
             saturation = input_data[1]
+            if saturation != str(0.3) and saturation != str(0.7):
+                print("Error: Expected saturation value of 0.3 or 0.7")
+                sys.exit(1)
         else:
             print("Error: not enough arguments provided")
             sys.exit(1)
@@ -95,8 +142,9 @@ def process_input(input_data):
 
 def actions_start(act, graph):
     if "print" in act:
-        print("print")
-        print(graph)
+        adj_matrix = create_hamiltonian_graph(nodes, saturation)
+        print("Macierz sąsiedztwa:")
+        display_adjacency_matrix(adj_matrix)
     if "euler" in act:
         print("euler")
         print(graph)
