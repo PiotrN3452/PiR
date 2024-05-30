@@ -64,10 +64,62 @@ class GraphGenerator:
     def display_adjacency_matrix(self):
         print(self.adjacency_matrix)
 
-
-
-
-
+    def find_eulerian_cycle(self):
+        if not self._is_eulerian():
+            return None
+        
+        adj_matrix_copy = self.adjacency_matrix.copy()
+        cycle = []
+        stack = [0]  # Start from the first node
+        
+        while stack:
+            u = stack[-1]
+            found_edge = False
+            for v in range(self.nodes):
+                if adj_matrix_copy[u, v] > 0:
+                    stack.append(v)
+                    adj_matrix_copy[u, v] -= 1
+                    adj_matrix_copy[v, u] -= 1
+                    found_edge = True
+                    break
+            if not found_edge:
+                cycle.append(stack.pop())
+        
+        return cycle
+    def _is_eulerian(self):
+        for node in range(self.nodes):
+            if np.sum(self.adjacency_matrix[node]) % 2 != 0:
+                return False
+        return True
+    def find_hamiltonian_cycle(self):
+        path = [-1] * self.nodes
+        path[0] = 0  # Start from the first node
+        
+        if not self._hamiltonian_cycle_util(path, 1):
+            return None
+        path.append(path[0])  # Make it a cycle by returning to the starting node
+        return path
+    def _hamiltonian_cycle_util(self, path, pos):
+        if pos == self.nodes:
+            if self.adjacency_matrix[path[pos - 1], path[0]] == 1:
+                return True
+            else:
+                return False
+        
+        for v in range(1, self.nodes):
+            if self._is_safe(v, path, pos):
+                path[pos] = v
+                if self._hamiltonian_cycle_util(path, pos + 1):
+                    return True
+                path[pos] = -1
+        
+        return False  
+    def _is_safe(self, v, path, pos):
+        if self.adjacency_matrix[path[pos - 1], v] == 0:
+            return False
+        if v in path:
+            return False
+        return True
 
 def main():
     global actions
@@ -180,11 +232,31 @@ def actions_start(act, graph):
             graph_generator.display_adjacency_matrix()
             
     if "euler" in act:
-        print("euler")
-        print(graph)
+        
+        if sys.argv[1] == "--hamilton":
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_hamiltonian_graph()
+            eulerian_cycle = graph_generator.find_eulerian_cycle()
+            print("Eulerian Cycle:", eulerian_cycle)
+
+        elif sys.argv[1] == "--non-hamilton":
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_non_hamiltonian_graph()
+            eulerian_cycle = graph_generator.find_eulerian_cycle()
+            print("Eulerian Cycle:", eulerian_cycle)
     if "hamilton" in act:
-        print("hamilton")
-        print(graph)
+        if sys.argv[1] == "--hamilton":
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_hamiltonian_graph()
+            hamiltonian_cycle = graph_generator.find_hamiltonian_cycle()
+            print("Hamiltonian Cycle:", hamiltonian_cycle)
+
+        elif sys.argv[1] == "--non-hamilton":
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_non_hamiltonian_graph()
+            hamiltonian_cycle = graph_generator.find_hamiltonian_cycle()
+            print("Hamiltonian Cycle:", hamiltonian_cycle)
+
     if "export" in act:
         print("export")
         print(graph)
