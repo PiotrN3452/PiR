@@ -70,7 +70,6 @@ def display_adjacency_matrix(adjacency_matrix):
 
 def main():
     global actions
-    global adjacency_matrix
     global nodes
     global saturation
 
