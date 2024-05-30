@@ -37,6 +37,30 @@ def create_hamiltonian_graph(nodes, saturation):
 
     return adjacency_matrix
 
+
+def create_non_hamiltonian_graph(nodes, saturation):
+    adjacency_matrix = np.zeros((nodes, nodes), dtype=int)
+    
+    num_edges = int((nodes * (nodes - 1) / 2) * saturation)
+
+    edges_added = 0
+    while edges_added < num_edges:
+        u, v = random.sample(range(nodes), 2)
+        if u != v and adjacency_matrix[u, v] == 0:
+            adjacency_matrix[u, v] = 1
+            adjacency_matrix[v, u] = 1
+            edges_added += 1
+
+    # Isolate one node to ensure the graph is non-Hamiltonian
+    isolated_node = random.choice(range(nodes))
+    for i in range(nodes):
+        if adjacency_matrix[isolated_node, i] == 1:
+            adjacency_matrix[isolated_node, i] = 0
+            adjacency_matrix[i, isolated_node] = 0
+
+    return adjacency_matrix
+
+
 def display_adjacency_matrix(adjacency_matrix):
     print(adjacency_matrix)
 
@@ -96,7 +120,7 @@ def main():
     if sys.argv[1] == "--non-hamilton":
         input_data = sys.stdin.read().strip().split('\n')
         input_data = process_input(input_data)
-        
+        saturation = 0.5
         if input_data:
             try:
                 nodes = int(input_data[0])
@@ -104,6 +128,7 @@ def main():
                 print("Error: invalid node number")
                 sys.exit(1)
             print(f"nodes> {nodes}")
+            print(f"saturation> {saturation}")
         else:
             print("Error: no nodes number")
         
@@ -142,9 +167,14 @@ def process_input(input_data):
 
 def actions_start(act, graph):
     if "print" in act:
-        adj_matrix = create_hamiltonian_graph(nodes, saturation)
-        print("Macierz sąsiedztwa:")
-        display_adjacency_matrix(adj_matrix)
+        if sys.argv[1] == "--hamilton":
+            adjacency_matrix = create_hamiltonian_graph(nodes, saturation)
+            print("Macierz sąsiedztwa:")
+            display_adjacency_matrix(adjacency_matrix)
+        elif sys.argv[1] == "--non-hamilton":
+            adjacency_matrix = create_non_hamiltonian_graph(nodes, saturation)
+            print("Macierz sąsiedztwa")
+            display_adjacency_matrix(adjacency_matrix)
     if "euler" in act:
         print("euler")
         print(graph)
