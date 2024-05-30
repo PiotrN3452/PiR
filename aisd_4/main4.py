@@ -121,6 +121,50 @@ class GraphGenerator:
             return False
         return True
 
+
+    def adjacency_matrix_to_tikz(self, filename="graph.tex"):
+        preamble = r"""
+\documentclass{standalone}
+\usepackage{tikz}
+\begin{document}
+\begin{tikzpicture}[scale=1]
+"""
+        tikz_code = self._generate_tikz_code()
+        postamble = r"""
+\end{tikzpicture}
+\end{document}
+"""
+        full_code = preamble + tikz_code + postamble
+
+        with open(filename, "w") as file:
+            file.write(full_code)
+
+        print(f"TikZ code has been written to {filename}")
+
+    def _generate_tikz_code(self):
+        node_positions = self._generate_node_positions()
+        num_nodes = self.adjacency_matrix.shape[0]
+        tikz_code = ""
+
+        # Add nodes
+        for i, (x, y) in enumerate(node_positions, start=1):
+            tikz_code += f"\\node[circle, draw] ({i}) at ({x:.2f}, {y:.2f}) {{{i}}};\n"
+
+        # Add edges
+        for i in range(num_nodes):
+            for j in range(i + 1, num_nodes):
+                if self.adjacency_matrix[i, j] != 0:
+                    tikz_code += f"\\draw ({i+1}) -- ({j+1});\n"
+
+        return tikz_code
+
+    def _generate_node_positions(self):
+        angle_step = 2 * np.pi / self.nodes
+        radius = 3
+        return [(radius * np.cos(i * angle_step), radius * np.sin(i * angle_step)) for i in range(self.nodes)]
+
+
+
 def main():
     global actions
     global nodes
@@ -235,7 +279,7 @@ def actions_start(act, graph):
         
         if sys.argv[1] == "--hamilton":
             graph_generator = GraphGenerator(nodes, saturation)
-            graph_generator.create_hamiltonian_graph()
+            x = graph_generator.create_hamiltonian_graph()
             eulerian_cycle = graph_generator.find_eulerian_cycle()
             print("Eulerian Cycle:", eulerian_cycle)
 
@@ -258,7 +302,6 @@ def actions_start(act, graph):
             print("Hamiltonian Cycle:", hamiltonian_cycle)
 
     if "export" in act:
-        print("export")
-        print(graph)
+        graph_generator.adjacency_matrix_to_tikz()
 if __name__ == "__main__":
     main()
