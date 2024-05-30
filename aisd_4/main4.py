@@ -5,64 +5,65 @@ from collections import deque
 
 sys.setrecursionlimit(10**6)
 
-def create_hamiltonian_graph(nodes, saturation):
-    adjacency_matrix = np.zeros((nodes, nodes), dtype=int)
+class GraphGenerator:
+    def __init__(self, nodes, saturation):
+        self.nodes = nodes
+        self.saturation = saturation
+        self.adjacency_matrix = np.zeros((nodes, nodes), dtype=int)
 
-    hamiltonian_cycle = list(range(nodes))
-    random.shuffle(hamiltonian_cycle)
-    for i in range(nodes - 1):
-        adjacency_matrix[hamiltonian_cycle[i], hamiltonian_cycle[i + 1]] = 1
-        adjacency_matrix[hamiltonian_cycle[i + 1], hamiltonian_cycle[i]] = 1
-    adjacency_matrix[hamiltonian_cycle[-1], hamiltonian_cycle[0]] = 1
-    adjacency_matrix[hamiltonian_cycle[0], hamiltonian_cycle[-1]] = 1
+    def create_hamiltonian_graph(self):
+        self._initialize_hamiltonian_cycle()
+        num_edges = int((self.nodes * (self.nodes - 1) / 2) * self.saturation)
+        self._add_random_edges(num_edges)
+        self._ensure_even_degree()
+        return self.adjacency_matrix
 
-    num_edges = int((nodes * (nodes - 1) / 2) * saturation)
+    def create_non_hamiltonian_graph(self):
+        num_edges = int((self.nodes * (self.nodes - 1) / 2) * self.saturation)
+        self._add_random_edges(num_edges)
+        self._isolate_random_node()
+        return self.adjacency_matrix
 
-    while np.sum(adjacency_matrix) / 2 < num_edges:
-        u, v = random.sample(range(nodes), 2)
-        if u != v and adjacency_matrix[u, v] == 0:
-            adjacency_matrix[u, v] = 1
-            adjacency_matrix[v, u] = 1
+    def _initialize_hamiltonian_cycle(self):
+        hamiltonian_cycle = list(range(self.nodes))
+        random.shuffle(hamiltonian_cycle)
+        for i in range(self.nodes - 1):
+            self.adjacency_matrix[hamiltonian_cycle[i], hamiltonian_cycle[i + 1]] = 1
+            self.adjacency_matrix[hamiltonian_cycle[i + 1], hamiltonian_cycle[i]] = 1
+        self.adjacency_matrix[hamiltonian_cycle[-1], hamiltonian_cycle[0]] = 1
+        self.adjacency_matrix[hamiltonian_cycle[0], hamiltonian_cycle[-1]] = 1
 
-    for node in range(nodes):
-        while np.sum(adjacency_matrix[node]) % 2 != 0:
-            neighbor = random.choice(np.nonzero(adjacency_matrix[node])[0])
-            adjacency_matrix[node, neighbor] = 0
-            adjacency_matrix[neighbor, node] = 0
-            cycle_nodes = random.sample(range(nodes), 3)
-            adjacency_matrix[cycle_nodes[0], cycle_nodes[1]] = 1
-            adjacency_matrix[cycle_nodes[1], cycle_nodes[0]] = 1
-            adjacency_matrix[cycle_nodes[1], cycle_nodes[2]] = 1
-            adjacency_matrix[cycle_nodes[2], cycle_nodes[1]] = 1
+    def _add_random_edges(self, num_edges):
+        edges_added = np.sum(self.adjacency_matrix) // 2
+        while edges_added < num_edges:
+            u, v = random.sample(range(self.nodes), 2)
+            if u != v and self.adjacency_matrix[u, v] == 0:
+                self.adjacency_matrix[u, v] = 1
+                self.adjacency_matrix[v, u] = 1
+                edges_added += 1
 
-    return adjacency_matrix
+    def _ensure_even_degree(self):
+        for node in range(self.nodes):
+            while np.sum(self.adjacency_matrix[node]) % 2 != 0:
+                neighbor = random.choice(np.nonzero(self.adjacency_matrix[node])[0])
+                self.adjacency_matrix[node, neighbor] = 0
+                self.adjacency_matrix[neighbor, node] = 0
+                cycle_nodes = random.sample(range(self.nodes), 3)
+                self.adjacency_matrix[cycle_nodes[0], cycle_nodes[1]] = 1
+                self.adjacency_matrix[cycle_nodes[1], cycle_nodes[0]] = 1
+                self.adjacency_matrix[cycle_nodes[1], cycle_nodes[2]] = 1
+                self.adjacency_matrix[cycle_nodes[2], cycle_nodes[1]] = 1
 
+    def _isolate_random_node(self):
+        isolated_node = random.choice(range(self.nodes))
+        for i in range(self.nodes):
+            if self.adjacency_matrix[isolated_node, i] == 1:
+                self.adjacency_matrix[isolated_node, i] = 0
+                self.adjacency_matrix[i, isolated_node] = 0
 
-def create_non_hamiltonian_graph(nodes, saturation):
-    adjacency_matrix = np.zeros((nodes, nodes), dtype=int)
-    
-    num_edges = int((nodes * (nodes - 1) / 2) * saturation)
+    def display_adjacency_matrix(self):
+        print(self.adjacency_matrix)
 
-    edges_added = 0
-    while edges_added < num_edges:
-        u, v = random.sample(range(nodes), 2)
-        if u != v and adjacency_matrix[u, v] == 0:
-            adjacency_matrix[u, v] = 1
-            adjacency_matrix[v, u] = 1
-            edges_added += 1
-
-    # Isolate one node to ensure the graph is non-Hamiltonian
-    isolated_node = random.choice(range(nodes))
-    for i in range(nodes):
-        if adjacency_matrix[isolated_node, i] == 1:
-            adjacency_matrix[isolated_node, i] = 0
-            adjacency_matrix[i, isolated_node] = 0
-
-    return adjacency_matrix
-
-
-def display_adjacency_matrix(adjacency_matrix):
-    print(adjacency_matrix)
 
 
 
@@ -167,13 +168,17 @@ def process_input(input_data):
 def actions_start(act, graph):
     if "print" in act:
         if sys.argv[1] == "--hamilton":
-            adjacency_matrix = create_hamiltonian_graph(nodes, saturation)
-            print("Macierz sąsiedztwa:")
-            display_adjacency_matrix(adjacency_matrix)
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_hamiltonian_graph()
+            print("Hamiltonian Graph Adjacency Matrix:")
+            graph_generator.display_adjacency_matrix()
+
         elif sys.argv[1] == "--non-hamilton":
-            adjacency_matrix = create_non_hamiltonian_graph(nodes, saturation)
-            print("Macierz sąsiedztwa")
-            display_adjacency_matrix(adjacency_matrix)
+            graph_generator = GraphGenerator(nodes, saturation)
+            graph_generator.create_non_hamiltonian_graph()
+            print("Non-Hamiltonian Graph Adjacency Matrix:")
+            graph_generator.display_adjacency_matrix()
+            
     if "euler" in act:
         print("euler")
         print(graph)
