@@ -14,7 +14,8 @@ class GraphGenerator:
     def create_hamiltonian_graph(self):
         self._initialize_hamiltonian_cycle()
         num_edges = int((self.nodes * (self.nodes - 1) / 2) * self.saturation)
-        self._add_random_edges(num_edges)
+        additional_edges = num_edges - self.nodes 
+        self._add_random_edges(additional_edges)
         self._ensure_even_degree()
         return self.adjacency_matrix
 
@@ -45,7 +46,10 @@ class GraphGenerator:
     def _ensure_even_degree(self):
         for node in range(self.nodes):
             while np.sum(self.adjacency_matrix[node]) % 2 != 0:
-                neighbor = random.choice(np.nonzero(self.adjacency_matrix[node])[0])
+                potential_nodes = [i for i in range(self.nodes) if i != node and np.sum(self.adjacency_matrix[i]) % 2 != 0]
+                if not potential_nodes:
+                    continue  
+                neighbor = random.choice(potential_nodes)
                 self.adjacency_matrix[node, neighbor] = 0
                 self.adjacency_matrix[neighbor, node] = 0
                 cycle_nodes = random.sample(range(self.nodes), 3)
@@ -70,7 +74,7 @@ class GraphGenerator:
         
         adj_matrix_copy = self.adjacency_matrix.copy()
         cycle = []
-        stack = [0]  # Start from the first node
+        stack = [0]
         
         while stack:
             u = stack[-1]
@@ -86,19 +90,20 @@ class GraphGenerator:
                 cycle.append(stack.pop())
         
         return cycle
+    
     def _is_eulerian(self):
         for node in range(self.nodes):
             if np.sum(self.adjacency_matrix[node]) % 2 != 0:
                 return False
         return True
+    
     def find_hamiltonian_cycle(self):
         path = [-1] * self.nodes
-        path[0] = 0  # Start from the first node
-        
+        path[0] = 0 
         if not self._hamiltonian_cycle_util(path, 1):
             return None
-        path.append(path[0])  # Make it a cycle by returning to the starting node
-        return path
+        return [x + 1 for x in path]
+
     def _hamiltonian_cycle_util(self, path, pos):
         if pos == self.nodes:
             if self.adjacency_matrix[path[pos - 1], path[0]] == 1:
@@ -113,7 +118,8 @@ class GraphGenerator:
                     return True
                 path[pos] = -1
         
-        return False  
+        return False
+      
     def _is_safe(self, v, path, pos):
         if self.adjacency_matrix[path[pos - 1], v] == 0:
             return False
